@@ -1,5 +1,5 @@
 import { getBrowser, getCurrentTabInfo } from '../../@/lib/utils.ts';
-import BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
+import BookmarkTreeNode = browser.bookmarks.BookmarkTreeNode;
 import { getConfig, isConfigured } from '../../@/lib/config.ts';
 import { deleteLinkFetch, postLinkFetch, updateLinkFetch } from '../../@/lib/actions/links.ts';
 import {
@@ -7,10 +7,10 @@ import {
   deleteBookmarkMetadata, getBookmarkMetadataByBookmarkId, getBookmarkMetadataByUrl, getBookmarksMetadata,
   saveBookmarkMetadata,
 } from '../../@/lib/cache.ts';
-import ContextType = chrome.contextMenus.ContextType;
-import OnClickData = chrome.contextMenus.OnClickData;
+import ContextType = browser.menus.ContextType;
+import OnClickData = browser.menus.OnClickData;
 import { getCsrfTokenFetch, getSessionFetch, performLoginOrLogoutFetch } from '../../@/lib/auth/auth.ts';
-import OnInputEnteredDisposition = chrome.omnibox.OnInputEnteredDisposition;
+import OnInputEnteredDisposition = browser.omnibox.OnInputEnteredDisposition;
 
 const browser = getBrowser();
 
@@ -70,7 +70,7 @@ browser.bookmarks.onCreated.addListener(async (_id: string, bookmark: BookmarkTr
   }
 });
 
-browser.bookmarks.onChanged.addListener(async (id: string, changeInfo: chrome.bookmarks.BookmarkChangeInfo) => {
+browser.bookmarks.onChanged.addListener(async (id: string, changeInfo: browser.bookmarks.BookmarkChangeInfo) => {
   try {
     const { syncBookmarks, baseUrl, username, password, usingSSO } = await getConfig();
     if (!syncBookmarks || !changeInfo.url) {
@@ -121,7 +121,7 @@ browser.bookmarks.onChanged.addListener(async (id: string, changeInfo: chrome.bo
   }
 });
 
-browser.bookmarks.onRemoved.addListener(async (id: string, removeInfo: chrome.bookmarks.BookmarkRemoveInfo) => {
+browser.bookmarks.onRemoved.addListener(async (id: string, removeInfo: browser.bookmarks.BookmarkRemoveInfo) => {
   try {
     const { syncBookmarks, baseUrl, username, password, usingSSO } = await getConfig();
     if (!syncBookmarks || !removeInfo.node.url) {
@@ -163,14 +163,14 @@ browser.bookmarks.onRemoved.addListener(async (id: string, removeInfo: chrome.bo
 // This is for the context menus!
 // Example taken from: https://github.com/GoogleChrome/chrome-extensions-samples/blob/main/api-samples/contextMenus/basic/sample.js
 
-browser.contextMenus.onClicked.addListener(async (info, tab) => {
+browser.menus.onClicked.addListener(async (info, tab) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   await genericOnClick(info, tab);
 });
 
 // A generic onclick callback function.
-async function genericOnClick(info: OnClickData, tab: chrome.tabs.Tab | undefined) {
+async function genericOnClick(info: OnClickData, tab: browser.tabs.Tab | undefined) {
   const { syncBookmarks, baseUrl, username, password, usingSSO } = await getConfig();
   const configured = await isConfigured();
   if (!tab?.url || !tab?.title || !configured) {
