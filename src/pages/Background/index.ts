@@ -158,10 +158,7 @@ browser.bookmarks.onRemoved.addListener(async (id: string, removeInfo: {node: {u
   } catch (error) {
     console.error(error);
   }
-});
-
-// This is for the context menus!
-// Example taken from: https://github.com/GoogleChrome/chrome-extensions-samples/blob/main/api-samples/contextMenus/basic/sample.js
+}); 
 
 browser.menus.onClicked.addListener(async (info: browser.menus.OnClickData, tab: browser.tabs.Tab | undefined) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -169,8 +166,8 @@ browser.menus.onClicked.addListener(async (info: browser.menus.OnClickData, tab:
   await genericOnClick(info, tab);
 });
 
-// A generic onclick callback function.
-async function genericOnClick(info: OnClickData, tab: browser.tabs.Tab | undefined) {
+// A generic onclick callback function.xe
+async function genericOnClick(info: browser.menus.OnClickData, tab: browser.tabs.Tab | undefined) {
   const { syncBookmarks, baseUrl, username, password, usingSSO } = await getConfig();
   const configured = await isConfigured();
   if (!tab?.url || !tab?.title || !configured) {
@@ -234,9 +231,10 @@ async function genericOnClick(info: OnClickData, tab: browser.tabs.Tab | undefin
       }
   }
 }
+
 browser.runtime.onInstalled.addListener(function () {
   // Create one test item for each context type.
-  const contexts: ContextType[] = [
+  const contexts: browser.contextMenus.ContextType[] = [
     'page',
     'selection',
     'link',
@@ -246,10 +244,10 @@ browser.runtime.onInstalled.addListener(function () {
     'audio'
   ];
   for (const context of contexts) {
-    const  title: string = "Add link to Linkwarden";
-    browser.menus.create({
+    const title: string = "Add link to Linkwarden";
+    browser.contextMenus.create({
       title: "Test parent item",
-      contexts: ["all"], // or any other valid context type
+      contexts: [context], // or any other valid context type
       id: "parent",
     });
   }
