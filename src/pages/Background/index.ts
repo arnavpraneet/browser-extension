@@ -70,7 +70,7 @@ browser.bookmarks.onCreated.addListener(async (_id: string, bookmark: BookmarkTr
   }
 });
 
-browser.bookmarks.onChanged.addListener(async (id: string, changeInfo: browser.bookmarks.BookmarkChangeInfo) => {
+browser.bookmarks.onChanged.addListener(async (id: string, changeInfo: {url?: string, title?: string}) => {
   try {
     const { syncBookmarks, baseUrl, username, password, usingSSO } = await getConfig();
     if (!syncBookmarks || !changeInfo.url) {
@@ -121,7 +121,7 @@ browser.bookmarks.onChanged.addListener(async (id: string, changeInfo: browser.b
   }
 });
 
-browser.bookmarks.onRemoved.addListener(async (id: string, removeInfo: browser.bookmarks.BookmarkRemoveInfo) => {
+browser.bookmarks.onRemoved.addListener(async (id: string, removeInfo: {node: {url?: string}}) => {
   try {
     const { syncBookmarks, baseUrl, username, password, usingSSO } = await getConfig();
     if (!syncBookmarks || !removeInfo.node.url) {
@@ -163,7 +163,7 @@ browser.bookmarks.onRemoved.addListener(async (id: string, removeInfo: browser.b
 // This is for the context menus!
 // Example taken from: https://github.com/GoogleChrome/chrome-extensions-samples/blob/main/api-samples/contextMenus/basic/sample.js
 
-browser.menus.onClicked.addListener(async (info, tab) => {
+browser.menus.onClicked.addListener(async (info: browser.menus.OnClickData, tab: browser.tabs.Tab | undefined) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   await genericOnClick(info, tab);
@@ -247,10 +247,10 @@ browser.runtime.onInstalled.addListener(function () {
   ];
   for (const context of contexts) {
     const  title: string = "Add link to Linkwarden";
-    browser.contextMenus.create({
-      title: title,
-      contexts: [context],
-      id: context
+    browser.menus.create({
+      title: "Test parent item",
+      contexts: ["all"], // or any other valid context type
+      id: "parent",
     });
   }
 });
